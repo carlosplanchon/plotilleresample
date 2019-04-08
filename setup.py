@@ -11,7 +11,8 @@ setup(
     packages=["plotilleresample"],
     version="0.1",
     license="GPL3",
-    description="Python3 module to resample datasets before plotting with Plotille.",
+    description="Python3 module to resample datasets"
+            "before plotting with Plotille.",
     long_description=readme,
     long_description_content_type="text/markdown",
     author="Carlos A. Planchón",
