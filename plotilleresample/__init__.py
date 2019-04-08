@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 
-from servusresample.servusresample import resample_plot
-from servusresample.servusresample import resample_scatter
+from plotilleresample.plotilleresample import resample_plot
+from plotilleresample.plotilleresample import resample_scatter
