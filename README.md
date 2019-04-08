@@ -1,6 +1,9 @@
 # plotilleresample
 *Python3 module to resample datasets before plotting with Plotille.*
 
+# Rationale
+I want to optimize plot and scatter function of plotille.
+
 ## Installation
 ### Install with pip
 ```
