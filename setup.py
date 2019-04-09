@@ -9,7 +9,7 @@ with open("README.md", "r") as f:
 setup(
     name="plotilleresample",
     packages=["plotilleresample"],
-    version="0.3",
+    version="0.4",
     license="GPL3",
     description="Python3 module to resample datasets"
             "before plotting with Plotille.",
@@ -19,7 +19,7 @@ setup(
     author_email="bubbledoloresuruguay2@gmail.com",
     url="https://github.com/carlosplanchon/plotilleresample",
     download_url="https://github.com/carlosplanchon/"
-        "plotilleresample/archive/v0.3.tar.gz",
+        "plotilleresample/archive/v0.4.tar.gz",
     keywords=["plotting", "ascii", "math", "resample"],
     classifiers=[
         "Intended Audience :: Developers",
