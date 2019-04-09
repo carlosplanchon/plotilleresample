@@ -13,7 +13,7 @@ def resample_plot(
     Y: list_val,
     width: int = 80,
     height: int = 40
-        ) -> Tuple[List[int], List[int]]:
+        ) -> Tuple[list_val, list_val]:
     """
 
     :param X: list_val: List of X values.
@@ -46,7 +46,7 @@ def resample_scatter(
     Y: list_val,
     width: int = 80,
     height: int = 40
-        ) -> Tuple[List[int], List[int]]:
+        ) -> Tuple[list_val, list_val]:
     """
 
     :param X: list_val: List of X values.
