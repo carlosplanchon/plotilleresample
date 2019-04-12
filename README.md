@@ -41,9 +41,9 @@ X = [i for i in range(r)]
 Y = [math.sin(i / 100) * 100 for i in range(r)]
 
 print(" · Scatter...")
-xs, ys = plotilledimreduction.dim_reduction_scatter(X, Y, w, h)
+xs, ys = plotilleresample.dim_reduction_scatter(X, Y, w, h)
 print(" · Plot...")
-xp, yp = plotilledimreduction.dim_reduction_plot(X, Y, w, h)
+xp, yp = plotilleresample.dim_reduction_plot(X, Y, w, h)
 print(" --- READY ---")
 
 print(f"Len plot.x {len(xp)}")
