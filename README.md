@@ -16,7 +16,7 @@ pip3 install -U servusresample
 
 import plotille
 
-import plotilledimreduction
+import plotilleresample
 
 import math
 
