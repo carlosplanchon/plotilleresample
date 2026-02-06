@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-from typing import List, Tuple
-
 # This value is used to avoid Nyquist related problems.
 plot_multiplier = 4
 
-list_val = List[int]
+list_val = list[int]
 
 
 def resample_plot(
@@ -13,7 +11,7 @@ def resample_plot(
     Y: list_val,
     width: int = 80,
     height: int = 40
-        ) -> Tuple[list_val, list_val]:
+        ) -> tuple[list_val, list_val]:
     """
 
     :param X: list_val: List of X values.
@@ -46,7 +44,7 @@ def resample_scatter(
     Y: list_val,
     width: int = 80,
     height: int = 40
-        ) -> Tuple[list_val, list_val]:
+        ) -> tuple[list_val, list_val]:
     """
 
     :param X: list_val: List of X values.
