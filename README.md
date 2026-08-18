@@ -53,5 +53,5 @@ print(plotille.plot(xp, yp, w, h))
 
 input("Scatter:")
 clear_screen()
-print(plotille.plot(xs, ys, w, h))
+print(plotille.scatter(xs, ys, w, h))
 ```
