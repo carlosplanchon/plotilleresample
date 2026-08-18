@@ -1,6 +1,11 @@
 # plotilleresample
 *Python module to resample datasets before plotting with Plotille.*
 
+[![CI](https://github.com/carlosplanchon/plotilleresample/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosplanchon/plotilleresample/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/plotilleresample.svg)](https://pypi.org/project/plotilleresample/)
+[![Python versions](https://img.shields.io/pypi/pyversions/plotilleresample.svg)](https://pypi.org/project/plotilleresample/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Installation
 ### Install with UV:
 ```
