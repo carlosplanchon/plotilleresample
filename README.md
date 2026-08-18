@@ -32,6 +32,21 @@ _, y_minmax = plotilleresample.resample_plot_minmax(X, Y)
 
 Both plot resamplers keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
 
+## Benchmark
+
+End to end times: building the plot string with plotille alone versus resampling first. Measured with `benchmarks/bench.py` (canvas 80x40, best of 3) on Python 3.14, Linux, Intel Core i5-1135G7:
+
+| Points  | plotille alone | stride + plotille | minmax + plotille |
+| ------- | -------------- | ----------------- | ----------------- |
+| 10,000  | 188 ms         | 20 ms             | 22 ms             |
+| 100,000 | 1.82 s         | 38 ms             | 52 ms             |
+
+Reproduce it from the repository root with:
+
+```
+uv run --group bench benchmarks/bench.py
+```
+
 ## Installation
 ### Install with UV:
 ```

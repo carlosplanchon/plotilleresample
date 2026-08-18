@@ -38,6 +38,7 @@ include = ["plotilleresample*"]
 
 [dependency-groups]
 dev = ["pytest>=8"]
+bench = ["plotille"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
