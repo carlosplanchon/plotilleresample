@@ -96,6 +96,39 @@ def test_minmax_constant_data_dedups():
     assert set(ym) == {5.0}
 
 
+def _raises_value_error(fn, *args):
+    try:
+        fn(*args)
+    except ValueError:
+        return True
+    return False
+
+
+def test_length_mismatch_raises():
+    X = list(range(1000))
+    Y = list(range(500))
+    for fn in (resample_plot, resample_plot_minmax, resample_scatter):
+        assert _raises_value_error(fn, X, Y, 80, 40), fn.__name__
+    # Fail fast even when the input is below the resampling threshold.
+    assert _raises_value_error(resample_plot, [1.0], [1.0, 2.0], 80, 40)
+
+
+def test_non_positive_width_raises():
+    X = list(range(1000))
+    for fn in (resample_plot, resample_plot_minmax, resample_scatter):
+        for w in (0, -5):
+            assert _raises_value_error(fn, X, X, w, 40), fn.__name__
+
+
+def test_non_positive_height_raises_only_in_scatter():
+    X = list(range(1000))
+    for h in (0, -5):
+        assert _raises_value_error(resample_scatter, X, X, 80, h)
+        # height is unused in the plot resamplers, so it stays permissive.
+        assert not _raises_value_error(resample_plot, X, X, 80, h)
+        assert not _raises_value_error(resample_plot_minmax, X, X, 80, h)
+
+
 if __name__ == "__main__":
     tests = [
         fn for name, fn in sorted(globals().items())

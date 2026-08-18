@@ -7,6 +7,21 @@ from math import ceil
 plot_multiplier = 4
 
 
+def _check_input(
+    X: Sequence[float],
+    Y: Sequence[float],
+    width: int
+        ) -> None:
+    if len(X) != len(Y):
+        raise ValueError(
+            "X and Y must have the same number of entries: "
+            f"{len(X)} != {len(Y)}"
+            )
+
+    if width <= 0:
+        raise ValueError(f"width must be positive: {width}")
+
+
 def resample_plot(
     X: Sequence[float],
     Y: Sequence[float],
@@ -22,6 +37,8 @@ def resample_plot(
         with resample_scatter. (Default value = 40)
 
     """
+    _check_input(X, Y, width)
+
     if len(X) > width * plot_multiplier:
         step = ceil(len(X) / (width * plot_multiplier))
 
@@ -57,6 +74,8 @@ def resample_plot_minmax(
         with resample_scatter. (Default value = 40)
 
     """
+    _check_input(X, Y, width)
+
     if len(X) > width * plot_multiplier:
         n = len(X)
 
@@ -102,6 +121,11 @@ def resample_scatter(
     :param height: int: Height of the plot. (Default value = 40)
 
     """
+    _check_input(X, Y, width)
+
+    if height <= 0:
+        raise ValueError(f"height must be positive: {height}")
+
     scatter_multiplier = width * 2 * height
     if len(X) > scatter_multiplier:
         step = ceil(len(X) / scatter_multiplier)
