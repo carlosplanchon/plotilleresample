@@ -17,7 +17,8 @@ authors = [
 keywords = ["plotting", "ascii", "math", "resample"]
 classifiers = [
     "Intended Audience :: Developers",
-    "Topic :: Software Development :: Build Tools",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Terminals",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -29,7 +30,7 @@ classifiers = [
 requires-python = ">=3.10"
 
 [project.urls]
-Romepage = "https://github.com/carlosplanchon/plotilleresample"
+Homepage = "https://github.com/carlosplanchon/plotilleresample"
 
 [tool.setuptools.packages.find]
 where = ["."]
