@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "plotilleresample"
-version = "0.5"
+version = "1.0"
 description = "Python module to resample datasets before plotting with Plotille."
 readme = "README.md"
 
