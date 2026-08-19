@@ -208,9 +208,9 @@ def resample_plot_minmax_lttb(
     the per bucket extremes with a minmax pass at minmax_ratio finer
     granularity and runs LTTB over those candidates (MinMaxLTTB,
     Van der Donckt et al., 2023; the plotly-resampler default).
-    Around 3x faster than pure LTTB on large inputs, the true
-    extremes are always among the candidates, and the output only
-    differs marginally from pure LTTB.
+    Faster than pure LTTB, with a gap that grows with input size;
+    the true extremes are always among the candidates, and the
+    output only differs marginally from pure LTTB.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.
