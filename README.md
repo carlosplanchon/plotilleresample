@@ -14,6 +14,8 @@ Plotille rasterizes to a terminal canvas of braille dots: `width * 2` columns by
 | ---------------------- | ------------------ | --------------------------------- |
 | `resample_plot`        | uniform stride     | smooth lines, cheapest reduction  |
 | `resample_plot_minmax` | min/max per bucket | peaks, oscillations, time series  |
+| `resample_plot_lttb`   | largest triangle per bucket | shape-faithful single line |
+| `resample_plot_minmax_lttb` | minmax preselection + LTTB | shape-faithful line, large inputs |
 | `resample_scatter`     | uniform stride     | large scatter inputs              |
 
 The uniform stride keeps one point every N: fast and predictable, but a narrow peak that falls between two kept points disappears from the plot. `resample_plot_minmax` instead makes one bucket per braille dot column and keeps the minimum and the maximum Y of each bucket, so the envelope of the signal — spikes included — always survives:
@@ -30,16 +32,20 @@ _, y_minmax = plotilleresample.resample_plot_minmax(X, Y)
 1000.0 in y_minmax  # True: the envelope survives
 ```
 
-Both plot resamplers keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
+`resample_plot_lttb` implements Largest-Triangle-Three-Buckets (Steinarsson, 2013): it always keeps the first and the last point and picks the most shape-representative point of each bucket, giving a single clean line that looks like the original. It keeps one point per bucket, so — unlike min/max — one of two opposing extremes falling in the same bucket can be dropped: shape fidelity instead of envelope guarantee.
+
+`resample_plot_minmax_lttb` is the hybrid (MinMaxLTTB, Van der Donckt et al., 2023; the plotly-resampler default): on large inputs a minmax pass preselects the per bucket extremes and LTTB runs over those candidates only. Around 3x faster than pure LTTB, visually equivalent, and the true extremes are always among the candidates.
+
+All four plot resamplers keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
 
 ## Benchmark
 
 End to end times: building the plot string with plotille alone versus resampling first. Measured with `benchmarks/bench.py` (canvas 80x40, best of 3) on Python 3.14, Linux, Intel Core i5-1135G7:
 
-| Points  | plotille alone | stride + plotille | minmax + plotille |
-| ------- | -------------- | ----------------- | ----------------- |
-| 10,000  | 188 ms         | 20 ms             | 22 ms             |
-| 100,000 | 1.82 s         | 38 ms             | 52 ms             |
+| Points  | plotille alone | stride + plotille | minmax + plotille | lttb + plotille | mmlttb + plotille |
+| ------- | -------------- | ----------------- | ----------------- | --------------- | ----------------- |
+| 10,000  | 202 ms         | 23 ms             | 22 ms             | 27 ms           | 24 ms             |
+| 100,000 | 1.75 s         | 39 ms             | 52 ms             | 90 ms           | 56 ms             |
 
 Reproduce it from the repository root with:
 
@@ -89,11 +95,19 @@ print(" · Plot...")
 xp, yp = plotilleresample.resample_plot(X, Y, w, h)
 print(" · Plot minmax...")
 xm, ym = plotilleresample.resample_plot_minmax(X, Y, w, h)
+print(" · Plot lttb...")
+xl, yl = plotilleresample.resample_plot_lttb(X, Y, w, h)
+print(" · Plot minmax lttb...")
+xmml, ymml = plotilleresample.resample_plot_minmax_lttb(X, Y, w, h)
 print(" --- READY ---")
 
 print(f"Len plot.x {len(xp)}")
 
 print(f"Len plot_minmax.x {len(xm)}")
+
+print(f"Len plot_lttb.x {len(xl)}")
+
+print(f"Len plot_minmax_lttb.x {len(xmml)}")
 
 print(f"Len scatter.x {len(xs)}")
 
@@ -104,6 +118,14 @@ print(plotille.plot(xp, yp, w, h))
 input("Plot minmax:")
 clear_screen()
 print(plotille.plot(xm, ym, w, h))
+
+input("Plot lttb:")
+clear_screen()
+print(plotille.plot(xl, yl, w, h))
+
+input("Plot minmax lttb:")
+clear_screen()
+print(plotille.plot(xmml, ymml, w, h))
 
 input("Scatter:")
 clear_screen()

@@ -22,7 +22,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import plotille
 
 from plotilleresample import resample_plot
+from plotilleresample import resample_plot_lttb
 from plotilleresample import resample_plot_minmax
+from plotilleresample import resample_plot_minmax_lttb
 
 WIDTH = 80
 HEIGHT = 40
@@ -60,7 +62,18 @@ def bench(r):
         xm, ym = resample_plot_minmax(X, Y, WIDTH, HEIGHT)
         plotille.plot(xm, ym, WIDTH, HEIGHT)
 
-    return best_of(raw), best_of(stride), best_of(minmax)
+    def lttb():
+        xl, yl = resample_plot_lttb(X, Y, WIDTH, HEIGHT)
+        plotille.plot(xl, yl, WIDTH, HEIGHT)
+
+    def mmlttb():
+        xh, yh = resample_plot_minmax_lttb(X, Y, WIDTH, HEIGHT)
+        plotille.plot(xh, yh, WIDTH, HEIGHT)
+
+    return (
+        best_of(raw), best_of(stride), best_of(minmax),
+        best_of(lttb), best_of(mmlttb),
+        )
 
 
 if __name__ == "__main__":
@@ -69,13 +82,15 @@ if __name__ == "__main__":
     print()
     header = (
         f"{'points':>10} | {'plotille alone':>15} | "
-        f"{'stride + plotille':>18} | {'minmax + plotille':>18}"
+        f"{'stride + plotille':>18} | {'minmax + plotille':>18} | "
+        f"{'lttb + plotille':>16} | {'mmlttb + plotille':>18}"
         )
     print(header)
     print("-" * len(header))
     for r in SIZES:
-        t_raw, t_stride, t_minmax = bench(r)
+        t_raw, t_stride, t_minmax, t_lttb, t_mmlttb = bench(r)
         print(
             f"{r:>10,} | {fmt(t_raw):>15} | "
-            f"{fmt(t_stride):>18} | {fmt(t_minmax):>18}"
+            f"{fmt(t_stride):>18} | {fmt(t_minmax):>18} | "
+            f"{fmt(t_lttb):>16} | {fmt(t_mmlttb):>18}"
             )
