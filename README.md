@@ -69,6 +69,8 @@ uv add plotilleresample
 pip install plotilleresample
 ```
 
+plotilleresample has no runtime dependencies — not even plotille: it only reduces sequences. To run the example below, install plotille as well (`uv add plotille` or `pip install plotille`).
+
 ## Usage
 ```python
 import math
