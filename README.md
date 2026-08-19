@@ -1,6 +1,6 @@
+# plotilleresample
 ![plotilleresample banner](assets/banner.jpg)
 
-# plotilleresample
 *Python module to resample datasets before plotting with Plotille.*
 
 [![CI](https://github.com/carlosplanchon/plotilleresample/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosplanchon/plotilleresample/actions/workflows/ci.yml)
