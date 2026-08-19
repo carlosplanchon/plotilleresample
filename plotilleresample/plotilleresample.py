@@ -215,7 +215,7 @@ def resample_plot_minmax_lttb(
     Van der Donckt et al., 2023; the plotly-resampler default).
     Faster than pure LTTB, with a gap that grows with input size;
     the true extremes are always among the candidates, and the
-    output only differs marginally from pure LTTB. Buckets are
+    result stays visually close to pure LTTB. Buckets are
     formed in sample order: X is expected to be already sorted,
     as in a time series.
 
