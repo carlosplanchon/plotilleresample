@@ -110,6 +110,8 @@ def resample_plot(
     height: int = 40
         ) -> tuple[Sequence[float], Sequence[float]]:
     """
+    Works in sample order: X is expected to be already sorted,
+    as in a time series.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.
@@ -146,7 +148,8 @@ def resample_plot_minmax(
     """
     Like resample_plot, but it keeps the minimum and the maximum
     Y of each bucket, so peaks in high frequency data survive
-    the resampling.
+    the resampling. Buckets are formed in sample order: X is
+    expected to be already sorted, as in a time series.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.
@@ -181,6 +184,8 @@ def resample_plot_lttb(
     the reduced line looks like the original. Unlike
     resample_plot_minmax it keeps one point per bucket, so one of two
     opposing extremes falling in the same bucket can be dropped.
+    Buckets are formed in sample order: X is expected to be already
+    sorted, as in a time series.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.
@@ -210,7 +215,9 @@ def resample_plot_minmax_lttb(
     Van der Donckt et al., 2023; the plotly-resampler default).
     Faster than pure LTTB, with a gap that grows with input size;
     the true extremes are always among the candidates, and the
-    output only differs marginally from pure LTTB.
+    output only differs marginally from pure LTTB. Buckets are
+    formed in sample order: X is expected to be already sorted,
+    as in a time series.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.

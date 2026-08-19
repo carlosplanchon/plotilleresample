@@ -36,7 +36,7 @@ _, y_minmax = plotilleresample.resample_plot_minmax(X, Y)
 
 `resample_plot_minmax_lttb` is the hybrid (MinMaxLTTB, Van der Donckt et al., 2023; the plotly-resampler default): on large inputs a minmax pass preselects the per bucket extremes and LTTB runs over those candidates only. Visually close to pure LTTB and faster, with a gap that grows with input size — about 1.6x end to end at 100,000 points, and about 4x on the resampling pass alone at 1,000,000 — and the true extremes are always among the candidates.
 
-All four plot resamplers keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
+All four plot resamplers work in sample order — they bucket by index, so X is expected to be already sorted, as in a time series (`resample_scatter` makes no ordering assumption). They keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
 
 ## Benchmark
 
