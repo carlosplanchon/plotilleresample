@@ -1,5 +1,5 @@
 # plotilleresample
-![plotilleresample banner](assets/banner.jpg)
+![plotilleresample banner](assets/banner-v2.jpg)
 
 *Python module to resample datasets before plotting with Plotille.*
 
