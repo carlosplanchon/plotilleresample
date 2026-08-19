@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 from math import ceil
 
-# This value is used to avoid Nyquist related problems.
+# Historically chosen to reduce Nyquist/undersampling-related artifacts.
 plot_multiplier = 4
 
 # Preselection ratio for resample_plot_minmax_lttb, as in plotly-resampler.
