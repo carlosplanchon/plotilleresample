@@ -34,7 +34,7 @@ _, y_minmax = plotilleresample.resample_plot_minmax(X, Y)
 
 `resample_plot_lttb` implements Largest-Triangle-Three-Buckets (Steinarsson, 2013): it always keeps the first and the last point and picks the most shape-representative point of each bucket, giving a single clean line that looks like the original. It keeps one point per bucket, so — unlike min/max — one of two opposing extremes falling in the same bucket can be dropped: shape fidelity instead of envelope guarantee.
 
-`resample_plot_minmax_lttb` is the hybrid (MinMaxLTTB, Van der Donckt et al., 2023; the plotly-resampler default): on large inputs a minmax pass preselects the per bucket extremes and LTTB runs over those candidates only. Visually equivalent to pure LTTB and faster, with a gap that grows with input size — about 1.6x end to end at 100,000 points, and about 4x on the resampling pass alone at 1,000,000 — and the true extremes are always among the candidates.
+`resample_plot_minmax_lttb` is the hybrid (MinMaxLTTB, Van der Donckt et al., 2023; the plotly-resampler default): on large inputs a minmax pass preselects the per bucket extremes and LTTB runs over those candidates only. Visually close to pure LTTB and faster, with a gap that grows with input size — about 1.6x end to end at 100,000 points, and about 4x on the resampling pass alone at 1,000,000 — and the true extremes are always among the candidates.
 
 All four plot resamplers keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
 
