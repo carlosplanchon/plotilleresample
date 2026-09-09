@@ -14,7 +14,7 @@ license-files = ["LICENSE"]
 authors = [
     {name = "Carlos A. Planchón", email = "carlosandresplanchonprestes@gmail.com"}
 ]
-keywords = ["plotting", "ascii", "math", "resample"]
+keywords = ["plotting", "ascii", "math", "resample", "plotille"]
 classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Scientific/Engineering :: Visualization",

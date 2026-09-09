@@ -1,7 +1,7 @@
 # plotilleresample
-![plotilleresample banner](assets/banner-v2.jpg)
+![plotilleresample banner](https://raw.githubusercontent.com/carlosplanchon/plotilleresample/master/assets/banner-v2.jpg)
 
-*Python module to resample datasets before plotting with Plotille.*
+*Python module to resample datasets before plotting with [Plotille](https://github.com/tammoippen/plotille).*
 
 [![CI](https://github.com/carlosplanchon/plotilleresample/actions/workflows/ci.yml/badge.svg)](https://github.com/carlosplanchon/plotilleresample/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/plotilleresample.svg)](https://pypi.org/project/plotilleresample/)
@@ -71,7 +71,7 @@ uv add plotilleresample
 pip install plotilleresample
 ```
 
-plotilleresample has no runtime dependencies — not even plotille: it only reduces sequences. To run the example below, install plotille as well (`uv add plotille` or `pip install plotille`).
+plotilleresample has no runtime dependencies — not even plotille: it only reduces sequences. To run the example below, install [plotille](https://pypi.org/project/plotille/) as well (`uv add plotille` or `pip install plotille`).
 
 ## Usage
 ```python
@@ -89,4 +89,8 @@ X, Y = resample_plot_minmax_lttb(X, Y, width=80, height=40)
 print(plotille.plot(X, Y, width=80, height=40))
 ```
 
-The full interactive demo, running every resampler on the same dataset, lives in [`examples/demo.py`](examples/demo.py).
+The full interactive demo, running every resampler on the same dataset, lives in [`examples/demo.py`](https://github.com/carlosplanchon/plotilleresample/blob/master/examples/demo.py).
+
+## Acknowledgements
+
+plotilleresample exists to serve [plotille](https://github.com/tammoippen/plotille) by Tammo Ippen, which now lists this project in its README. The min/max strategy grew out of the feedback in [plotille#22](https://github.com/tammoippen/plotille/issues/22), back in 2019.
