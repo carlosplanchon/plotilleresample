@@ -49,19 +49,40 @@ def _minmax_indices(
     return idxs
 
 
+def _as_numbers(X: Sequence[object]) -> Sequence[float]:
+    """X as numbers for the LTTB geometry, which measures triangles on it.
+
+    Numbers are used as they are. Anything that subtracts into a timedelta,
+    such as datetime or date, becomes seconds from the first value; the
+    spacing is what the geometry needs, not the absolute values.
+    """
+    first = X[0]
+    if isinstance(first, (int, float)):
+        return X
+
+    try:
+        return [(x - first).total_seconds() for x in X]
+    except (AttributeError, TypeError) as error:
+        raise ValueError(
+            f"X must hold numbers or dates: {error}"
+            ) from error
+
+
 def _lttb(
-    X: Sequence[float],
+    X: Sequence[object],
     Y: Sequence[float],
     n_out: int
-        ) -> tuple[list[float], list[float]]:
+        ) -> tuple[list[object], list[float]]:
+    # The points are chosen by index on a numeric view of X, so the values
+    # that come back are the originals, dates included.
+    xs = _as_numbers(X)
     n = len(X)
 
     # First and last point always survive; one point per bucket
     # in between, for exactly n_out points.
     m = n_out - 2
 
-    new_X = [X[0]]
-    new_Y = [Y[0]]
+    chosen = [0]
 
     a = 0
     for b in range(m):
@@ -73,13 +94,13 @@ def _lttb(
         if b + 1 < m:
             next_stop = 1 + (b + 2) * (n - 2) // m
             span = next_stop - stop
-            c_x = sum(X[stop:next_stop]) / span
+            c_x = sum(xs[stop:next_stop]) / span
             c_y = sum(Y[stop:next_stop]) / span
         else:
-            c_x = X[n - 1]
+            c_x = xs[n - 1]
             c_y = Y[n - 1]
 
-        a_x = X[a]
+        a_x = xs[a]
         a_y = Y[a]
 
         best = start
@@ -87,20 +108,18 @@ def _lttb(
         for i in range(start, stop):
             area = abs(
                 (a_x - c_x) * (Y[i] - a_y)
-                - (a_x - X[i]) * (c_y - a_y)
+                - (a_x - xs[i]) * (c_y - a_y)
                 )
             if area > best_area:
                 best_area = area
                 best = i
 
-        new_X.append(X[best])
-        new_Y.append(Y[best])
+        chosen.append(best)
         a = best
 
-    new_X.append(X[n - 1])
-    new_Y.append(Y[n - 1])
+    chosen.append(n - 1)
 
-    return new_X, new_Y
+    return [X[i] for i in chosen], [Y[i] for i in chosen]
 
 
 def resample_plot(
@@ -185,7 +204,8 @@ def resample_plot_lttb(
     resample_plot_minmax it keeps one point per bucket, so one of two
     opposing extremes falling in the same bucket can be dropped.
     Buckets are formed in sample order: X is expected to be already
-    sorted, as in a time series.
+    sorted, as in a time series. X may hold numbers or dates; the
+    triangles are measured on the spacing between its values.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.
@@ -217,7 +237,7 @@ def resample_plot_minmax_lttb(
     the true extremes are always among the candidates, and the
     result stays visually close to pure LTTB. Buckets are
     formed in sample order: X is expected to be already sorted,
-    as in a time series.
+    as in a time series. X may hold numbers or dates.
 
     :param X: Sequence[float]: X values.
     :param Y: Sequence[float]: Y values.

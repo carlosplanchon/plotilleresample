@@ -10,6 +10,11 @@ Run with pytest, or directly:
 import math
 import sys
 
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -227,6 +232,57 @@ def test_non_positive_height_raises_only_in_scatter():
         assert not _raises_value_error(resample_plot_lttb, X, X, 80, h)
         assert not _raises_value_error(resample_plot_minmax, X, X, 80, h)
         assert not _raises_value_error(resample_plot_minmax_lttb, X, X, 80, h)
+
+
+def test_lttb_measures_triangles_on_x_not_on_the_index():
+    # X spaced irregularly on purpose: these points are the ones LTTB picks
+    # when the geometry reads X. Using the index instead would move them.
+    X = [0.0, 1.0, 2.0, 10.0, 11.0, 12.0, 50.0, 51.0, 52.0, 53.0, 54.0, 100.0]
+    Y = [0.0, 5.0, -3.0, 8.0, 1.0, -9.0, 4.0, 7.0, -2.0, 6.0, 0.0, 3.0]
+    assert resample_plot_lttb(X, Y, 1, 40) == (
+        [0.0, 12.0, 51.0, 100.0], [0.0, -9.0, 7.0, 3.0]
+        )
+    assert resample_plot_lttb(X, Y, 2, 40) == (
+        [0.0, 1.0, 10.0, 12.0, 50.0, 52.0, 53.0, 100.0],
+        [0.0, 5.0, 8.0, -9.0, 4.0, -2.0, 6.0, 3.0],
+        )
+    assert resample_plot_minmax_lttb(X, Y, 1, 40) == (
+        [0.0, 12.0, 51.0, 100.0], [0.0, -9.0, 7.0, 3.0]
+        )
+
+
+def test_lttb_accepts_dates_on_the_x_axis():
+    r = 5000
+    base = datetime(2026, 1, 1)
+    X = [base + timedelta(minutes=i) for i in range(r)]
+    Y = [math.sin(i / 100) * 100 for i in range(r)]
+    Y[1234] = 999.0
+    for fn in (resample_plot_lttb, resample_plot_minmax_lttb):
+        xl, yl = fn(X, Y, 80, 40)
+        assert len(xl) == len(yl) == 80 * 4, fn.__name__
+        assert all(isinstance(value, datetime) for value in xl), fn.__name__
+        assert xl[0] == X[0] and xl[-1] == X[-1], fn.__name__
+        assert 999.0 in yl, fn.__name__
+        assert all(a <= b for a, b in zip(xl, xl[1:])), fn.__name__
+
+
+def test_lttb_accepts_plain_dates_too():
+    r = 1000
+    X = [date(2026, 1, 1) + timedelta(days=i) for i in range(r)]
+    Y = [float(i % 13) for i in range(r)]
+    xl, _ = resample_plot_lttb(X, Y, 80, 40)
+    assert all(isinstance(value, date) for value in xl)
+    assert xl[0] == X[0] and xl[-1] == X[-1]
+
+
+def test_lttb_rejects_an_x_that_is_neither_number_nor_date():
+    Y = [float(i) for i in range(1000)]
+    assert _raises_value_error(resample_plot_lttb, ["a"] * 1000, Y, 80, 40)
+    assert _raises_value_error(resample_plot_minmax_lttb, ["a"] * 1000, Y, 80, 40)
+    # Mixing aware and naive datetimes cannot be subtracted either.
+    base = datetime(2026, 1, 1)
+    mixed = [base] * 500 + [base.replace(tzinfo=timezone.utc)] * 500
+    assert _raises_value_error(resample_plot_lttb, mixed, Y, 80, 40)
 
 
 if __name__ == "__main__":
