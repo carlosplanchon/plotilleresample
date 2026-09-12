@@ -93,4 +93,4 @@ The full interactive demo, running every resampler on the same dataset, lives in
 
 ## Acknowledgements
 
-plotilleresample exists to serve [plotille](https://github.com/tammoippen/plotille) by Tammo Ippen, which now lists this project in its README. The min/max strategy grew out of the feedback in [plotille#22](https://github.com/tammoippen/plotille/issues/22), back in 2019.
+plotilleresample has a narrow purpose, giving Tammo Ippen's [plotille](https://github.com/tammoippen/plotille) only the points its terminal canvas can actually show. plotille now points back to this project from its own README. The min/max strategy came out of the discussion in [plotille#22](https://github.com/tammoippen/plotille/issues/22), opened in 2019.

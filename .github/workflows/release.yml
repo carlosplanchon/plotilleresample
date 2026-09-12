@@ -1,27 +1,29 @@
 name: Release
 
-# Publish to PyPI when a version tag is pushed, e.g. `git tag v0.6 && git push origin v0.6`.
+# Publish to PyPI when a version tag is pushed, e.g. `git tag v1.0.3 && git push origin v1.0.3`.
 # Tag commits that are already green on master.
 on:
   push:
     tags:
-      - "v*"
+      # Version tags such as v1.0, v1.0.2, v1.0.2rc1, v1.0.2a1 or v1.0.2b2.
+      - "v[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+[ab][0-9]+"
 
 # Least privilege by default. The publish job opts into id-token below.
 permissions:
   contents: read
 
 jobs:
-  publish:
+  # Everything that touches the code runs here, with no publishing credential.
+  # Only the artifacts it uploads reach the publish job.
+  build:
     runs-on: ubuntu-latest
-    # Bind to a GitHub Environment named "pypi". Add a required reviewer on it so a tag push
-    # cannot publish without manual approval, and configure the matching trusted publisher on PyPI.
-    environment: pypi
-    permissions:
-      id-token: write   # required for PyPI trusted publishing (OIDC), no stored token
-      contents: read
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       # Catch the classic slip (tagging before committing the version bump) here, in seconds and
       # with a clear message, instead of at the upload with PyPI's "File already exists".
       - name: Tag must match the packaged version
@@ -32,11 +34,59 @@ jobs:
             echo "::error::Tag v$tag does not match pyproject.toml version $pkg. Commit the version bump, then re-tag that commit."
             exit 1
           fi
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
-          enable-cache: true
+          # No cache on the release path, so nothing restored from an earlier
+          # run can reach the published artifacts.
+          enable-cache: false
+      - name: Run tests
+        run: |
+          uv sync --group dev
+          uv run pytest
       - name: Build sdist and wheel
         run: uv build
+      - name: Check package metadata
+        run: uvx twine check dist/*
+      # Install each artifact in a clean environment and use it, so a broken
+      # package fails here instead of on PyPI, where a version cannot be reused.
+      - name: Smoke test (wheel)
+        run: >
+          uv run --isolated --no-project --with dist/*.whl --
+          python -c "import plotilleresample as p; x, y =
+          p.resample_plot_lttb(list(range(1000)), list(range(1000)));
+          assert len(x) == len(y) == 320, len(x)"
+      - name: Smoke test (source distribution)
+        run: >
+          uv run --isolated --no-project --with dist/*.tar.gz --
+          python -c "import plotilleresample as p; x, y =
+          p.resample_plot_lttb(list(range(1000)), list(range(1000)));
+          assert len(x) == len(y) == 320, len(x)"
+      - name: Upload distributions as artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: dist/
+
+  # The only job that holds a publishing credential. It never checks out the
+  # code: it downloads what build produced and uploads that.
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    # Bind to a GitHub Environment named "pypi". Add a required reviewer on it so a tag push
+    # cannot publish without manual approval, and configure the matching trusted publisher on PyPI.
+    environment: pypi
+    permissions:
+      id-token: write   # required for PyPI trusted publishing (OIDC), no stored token
+      contents: read
+    steps:
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: false
+      - name: Download distributions artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: dist/
       # In GitHub Actions with id-token write, uv publishes via trusted publishing (OIDC).
       # It fetches a short-lived, single-use token from PyPI, so nothing is stored anywhere.
       - name: Publish to PyPI
