@@ -302,3 +302,44 @@ def resample_scatter(
             ]
 
     return X, Y
+
+
+def resample_scatter_minmax(
+    X: Sequence[float],
+    Y: Sequence[float],
+    width: int = 80,
+    height: int = 40
+        ) -> tuple[Sequence[float], Sequence[float]]:
+    """
+    Like resample_scatter, but the minimum and the maximum Y of
+    each bucket survive as well, together with the last point, so
+    an isolated outlier is not lost to the stride and the axes keep
+    their true range. Buckets are formed in sample order, as in
+    resample_plot_minmax; the stride makes no ordering assumption.
+    Keeps at most width * 2 * height + width * plot_multiplier + 1
+    points, each index once and in index order.
+
+    :param X: Sequence[float]: X values.
+    :param Y: Sequence[float]: Y values.
+    :param width: int: Width of the plot. (Default value = 80)
+    :param height: int: Height of the plot. (Default value = 40)
+
+    """
+    _check_input(X, Y, width)
+
+    if height <= 0:
+        raise ValueError(f"height must be positive: {height}")
+
+    scatter_multiplier = width * 2 * height
+    if len(X) > scatter_multiplier:
+        step = ceil(len(X) / scatter_multiplier)
+
+        idxs = set(range(0, len(X), step))
+        idxs.update(_minmax_indices(Y, width * plot_multiplier // 2))
+        idxs.add(len(X) - 1)
+        chosen = sorted(idxs)
+
+        X = [X[i] for i in chosen]
+        Y = [Y[i] for i in chosen]
+
+    return X, Y

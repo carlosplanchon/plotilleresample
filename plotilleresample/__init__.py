@@ -5,6 +5,7 @@ from plotilleresample.plotilleresample import resample_plot_lttb
 from plotilleresample.plotilleresample import resample_plot_minmax
 from plotilleresample.plotilleresample import resample_plot_minmax_lttb
 from plotilleresample.plotilleresample import resample_scatter
+from plotilleresample.plotilleresample import resample_scatter_minmax
 
 __all__ = [
     "resample_plot",
@@ -12,4 +13,5 @@ __all__ = [
     "resample_plot_minmax",
     "resample_plot_minmax_lttb",
     "resample_scatter",
+    "resample_scatter_minmax",
     ]
