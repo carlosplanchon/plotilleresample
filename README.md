@@ -19,6 +19,7 @@ Plotille rasterizes to a terminal canvas of braille dots: `width * 2` columns by
 | `resample_plot_lttb`   | largest triangle per bucket | shape-faithful single line |
 | `resample_plot_minmax_lttb` | minmax preselection + LTTB | shape-faithful line, large inputs |
 | `resample_scatter`     | uniform stride     | large scatter inputs              |
+| `resample_scatter_minmax` | stride + min/max per bucket | scatter inputs with outliers |
 
 The uniform stride keeps one point every N: fast and predictable, but a narrow peak that falls between two kept points disappears from the plot. `resample_plot_minmax` instead makes one bucket per braille dot column and keeps the minimum and the maximum Y of each bucket, so the envelope of the signal, spikes included, always survives:
 
@@ -38,7 +39,7 @@ _, y_minmax = plotilleresample.resample_plot_minmax(X, Y)
 
 `resample_plot_minmax_lttb` is the hybrid (MinMaxLTTB, Van der Donckt et al., 2023; the plotly-resampler default): on large inputs a minmax pass preselects the per bucket extremes and LTTB runs over those candidates only. Visually close to pure LTTB and faster, with a gap that grows with input size (about 1.6x end to end at 100,000 points, and about 3.4x on the resampling pass alone at 1,000,000), and the true extremes are always among the candidates.
 
-All four plot resamplers work in sample order: they bucket by index, so X is expected to be already sorted, as in a time series (`resample_scatter` makes no ordering assumption). X may hold numbers or dates: the min/max and stride resamplers only index it, and the LTTB ones measure their triangles on the spacing between its values. They keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display.
+All four plot resamplers work in sample order: they bucket by index, so X is expected to be already sorted, as in a time series (`resample_scatter` makes no ordering assumption). X may hold numbers or dates: the min/max and stride resamplers only index it, and the LTTB ones measure their triangles on the spacing between its values. They keep at most `width * 4` points and `resample_scatter` keeps at most `width * 2 * height`, so plotille only receives what the canvas can actually display. `resample_scatter_minmax` adds the minimum and the maximum of every bucket, and the last point, to that stride: an isolated outlier survives and the axes keep their true range, for at most `width * 4 + 1` points more.
 
 ## Benchmark
 

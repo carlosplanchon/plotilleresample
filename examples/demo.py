@@ -32,6 +32,8 @@ Y = [math.sin(i / 100) * 100 for i in range(r)]
 
 print(" · Scatter...")
 xs, ys = plotilleresample.resample_scatter(X, Y, w, h)
+print(" · Scatter minmax...")
+xsm, ysm = plotilleresample.resample_scatter_minmax(X, Y, w, h)
 print(" · Plot...")
 xp, yp = plotilleresample.resample_plot(X, Y, w, h)
 print(" · Plot minmax...")
@@ -52,6 +54,8 @@ print(f"Len plot_minmax_lttb.x {len(xmml)}")
 
 print(f"Len scatter.x {len(xs)}")
 
+print(f"Len scatter_minmax.x {len(xsm)}")
+
 input("Plot:")
 clear_screen()
 print(plotille.plot(xp, yp, w, h))
@@ -71,3 +75,7 @@ print(plotille.plot(xmml, ymml, w, h))
 input("Scatter:")
 clear_screen()
 print(plotille.scatter(xs, ys, w, h))
+
+input("Scatter minmax:")
+clear_screen()
+print(plotille.scatter(xsm, ysm, w, h))

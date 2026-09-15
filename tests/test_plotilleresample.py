@@ -24,6 +24,7 @@ from plotilleresample import resample_plot_lttb
 from plotilleresample import resample_plot_minmax
 from plotilleresample import resample_plot_minmax_lttb
 from plotilleresample import resample_scatter
+from plotilleresample import resample_scatter_minmax
 
 
 def test_resample_plot_size():
@@ -40,6 +41,43 @@ def test_resample_scatter_size():
         xs, ys = resample_scatter(list(range(r)), list(range(r)), 80, 40)
         assert len(xs) == len(ys)
         assert len(xs) <= 80 * 2 * 40
+
+
+def test_scatter_minmax_keeps_the_outliers_and_the_range():
+    # 100000 points on a canvas of 80x40 give a stride of 16, so the
+    # spikes at 33 and 77 are dropped by resample_scatter; the minmax
+    # buckets keep them, and the last point keeps the X range intact.
+    r = 100000
+    X = list(range(r))
+    Y = [0.0] * r
+    Y[33] = 1000.0
+    Y[77] = -1000.0
+
+    _, y_stride = resample_scatter(X, Y, 80, 40)
+    xs, ys = resample_scatter_minmax(X, Y, 80, 40)
+
+    assert 1000.0 not in y_stride
+    assert 1000.0 in ys and -1000.0 in ys
+    assert len(xs) == len(ys) <= 80 * 2 * 40 + 80 * 4 + 1
+    assert xs[0] == X[0] and xs[-1] == X[-1]
+    # Each index once, in index order.
+    assert all(a < b for a, b in zip(xs, xs[1:]))
+
+
+def test_scatter_minmax_keeps_the_stride_points():
+    r = 20000
+    X = list(range(r))
+    Y = [float(i % 97) for i in range(r)]
+    x_stride, _ = resample_scatter(X, Y, 80, 40)
+    xs, _ = resample_scatter_minmax(X, Y, 80, 40)
+    assert set(x_stride) <= set(xs)
+
+
+def test_scatter_minmax_passthrough_short_input():
+    X = [1.0, 2.0]
+    Y = [3.0, 4.0]
+    assert resample_scatter_minmax(X, Y, 80, 40) == (X, Y)
+    assert resample_scatter_minmax([], [], 80, 40) == ([], [])
 
 
 def test_minmax_passthrough_short_input():
@@ -206,7 +244,7 @@ def test_length_mismatch_raises():
     Y = list(range(500))
     for fn in (
         resample_plot, resample_plot_lttb, resample_plot_minmax,
-        resample_plot_minmax_lttb, resample_scatter,
+        resample_plot_minmax_lttb, resample_scatter, resample_scatter_minmax,
             ):
         assert _raises_value_error(fn, X, Y, 80, 40), fn.__name__
     # Fail fast even when the input is below the resampling threshold.
@@ -217,7 +255,7 @@ def test_non_positive_width_raises():
     X = list(range(1000))
     for fn in (
         resample_plot, resample_plot_lttb, resample_plot_minmax,
-        resample_plot_minmax_lttb, resample_scatter,
+        resample_plot_minmax_lttb, resample_scatter, resample_scatter_minmax,
             ):
         for w in (0, -5):
             assert _raises_value_error(fn, X, X, w, 40), fn.__name__
@@ -227,6 +265,7 @@ def test_non_positive_height_raises_only_in_scatter():
     X = list(range(1000))
     for h in (0, -5):
         assert _raises_value_error(resample_scatter, X, X, 80, h)
+        assert _raises_value_error(resample_scatter_minmax, X, X, 80, h)
         # height is unused in the plot resamplers, so it stays permissive.
         assert not _raises_value_error(resample_plot, X, X, 80, h)
         assert not _raises_value_error(resample_plot_lttb, X, X, 80, h)
